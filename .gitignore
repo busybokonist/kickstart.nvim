@@ -3,4 +3,8 @@ test.sh
 .luarc.json
 nvim
 
+.DS_Store
+.github/.DS_Store
+lua/.DS_Store
+
 spell/
