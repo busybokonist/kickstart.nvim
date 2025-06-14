@@ -1,81 +1,104 @@
----@type LazySpec
+-- ~/.config/nvim/lua/user/obsidian.lua
+
+-- Load the Lazy package manager
+-- require('lazy').setup {
+-- Obsidian.nvim plugin
 return {
-  "obsidian-nvim/obsidian.nvim",
-  version = "*", -- recommended, use latest release instead of latest commit
-  lazy = true,
-  ft = "markdown",
-  -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
-  -- event = {
-  --   -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
-  --   -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/*.md"
-  --   -- refer to `:h file-pattern` for more examples
-  --   "BufReadPre path/to/my-vault/*.md",
-  --   "BufNewFile path/to/my-vault/*.md",
-  -- },
+  'obsidian-nvim/obsidian.nvim',
+  --  version = '*', -- recommended, use latest release instead of latest commit
+  --  lazy = true,
+  ft = 'markdown',
+
+  -- config = function()
+  --   require('obsidian').setup {
+  --     dir = '/Users/jackp/Library/Mobile Documents/iCloud~md~obsidian/Documents/filing-cabinet', -- Change this to your Obsidian vault path
+  --     -- Optional configurations
+  --     --       daily_notes = {
+  --     --         folder = 'Daily', -- Folder for daily notes
+  --     --         date_format = '%Y-%m-%d', -- Date format for daily notes
+  --     --        },
+  --     completion = {
+  --       nvim_cmp = true, -- Enable nvim-cmp for completion
+  --     },
+  --   }
+  -- end,
+},
+-- Autocompletion with nvim-cmp
+{
+  'hrsh7th/nvim-cmp',
   dependencies = {
-    -- Required.
-    "nvim-lua/plenary.nvim",
-    -- "hrsh7th/nvim-cmp",
-    -- "nvim-telescope/telescope.nvim",
-
-    -- see above for full list of optional dependencies ☝️
+    'hrsh7th/cmp-nvim-lsp', -- LSP source for nvim-cmp
+    'hrsh7th/cmp-buffer', -- Buffer completions
+    'hrsh7th/cmp-path', -- Path completions
+    'hrsh7th/cmp-cmdline', -- Command line completions
+    'saadparwaiz1/cmp_luasnip', -- Snippet completions
+    'L3MON4D3/LuaSnip', -- Snippet engine
   },
-  ---@module 'obsidian'
-  ---@type obsidian.config.ClientOpts
-  -- require('obsidian').setup({ 
-
-  opts = {
-    workspaces = {
-      {
-        name = "filing-cabinet",
-        path = "/Users/jackp/Library/Mobile Documents/iCloud~md~obsidian/Documents/filing-cabinet",
+  config = function()
+    local cmp = require 'cmp'
+    cmp.setup {
+      snippet = {
+        expand = function(args)
+          require('luasnip').lsp_expand(args.body) -- For luasnip users
+        end,
       },
-      {
-        name = "work-notes",
-        path = "/Users/jackp/Library/Mobile Documents/iCloud~md~obsidian/Documents/INF-notes",
+      mapping = {
+        ['<C-n>'] = cmp.mapping.select_next_item(),
+        ['<C-p>'] = cmp.mapping.select_prev_item(),
+        ['<C-Space>'] = cmp.mapping.complete(),
+        ['<C-e>'] = cmp.mapping.close(),
+        ['<CR>'] = cmp.mapping.confirm { select = true },
       },
-      {
-        name = "seek",
-        path = "/Users/jackp/vaults/SEEK",
+      sources = {
+        { name = 'nvim_lsp' },
+        { name = 'buffer' },
+        { name = 'path' },
+        { name = 'cmdline' },
       },
-    },
-  
-  -- see below for full list of options 👇
-    
-    -- Optional, completion of wiki links, local markdown links, and tags using nvim-cmp.
-    completion = {
-      -- Enables completion using nvim_cmp
-      nvim_cmp = true,
-      -- Enables completion using blink.cmp
-      blink = false,
-      -- Trigger completion at 2 chars.
-      min_chars = 2,
-    },
-
-    picker = {
-      -- Set your preferred picker. Can be one of 'telescope.nvim', 'fzf-lua', 'mini.pick' or 'snacks.pick'.
-      name = "telescope.nvim",
-      -- Optional, configure key mappings for the picker. These are the defaults.
-      -- Not all pickers support all mappings.
-
-    note_mappings = {
-      -- Create a new note from your query.
-      new = "<C-x>",
-      -- Insert a link to the selected note.
-      insert_link = "<C-l>",
-    },
-    
-    tag_mappings = {
-      -- Add tag(s) to current note.
-      tag_note = "<C-x>",
-      -- Insert a tag at the current location.
-      insert_tag = "<C-l>",
-    },
-  },
-
-    ui = { enable = false },
-
-    disable_frontmatter = true,
-  },
+    }
+  end,
+},
+-- Telescope with FZF support
+{
+  'nvim-telescope/telescope.nvim',
+  dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope-fzf-native.nvim' },
+  config = function()
+    require('telescope').setup {
+      defaults = {
+        -- Default configuration for telescope goes here
+        -- config_key = value,
+      },
+      pickers = {
+        find_files = {
+          theme = 'dropdown',
+        },
+      },
+      extensions = {
+        fzf = {
+          fuzzy = true, -- false will not do a fuzzy search
+          override_generic_sorter = true, -- override the generic sorter
+          override_file_sorter = true, -- override the file sorter
+          case_mode = 'ignore_case', -- or "respect_case" or "smart_case"
+        },
+      },
+    }
+    require('telescope').load_extension 'fzf'
+  end,
 }
--- })
+
+-- Render Markdown plugin
+-- {
+--   'iamcco/markdown-preview.nvim',
+--   run = function()
+--     vim.fn['mkdp#util#install']()
+--   end,
+--   ft = { 'markdown' },
+-- },
+
+-- Additional plugins can be added here
+--  ui == { enable = false },
+
+--  disable_frontmatter == true,
+-- }
+
+-- Additional configuration for Obsidian can go here
