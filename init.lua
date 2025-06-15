@@ -161,6 +161,21 @@ vim.opt.scrolloff = 10
 -- See `:help 'confirm'`
 vim.opt.confirm = true
 
+-- Neovim configuration for Obsidian
+vim.o.conceallevel = 2
+-- Enable basic wrapping
+vim.opt.wrap = true
+-- Break lines at word boundaries
+vim.opt.linebreak = true
+-- Indent wrapped lines to match original line's indent
+vim.opt.breakindent = true
+-- (Optional) Show an indicator for wrapped lines
+vim.opt.showbreak = '↪ ' -- Note the space for readability
+-- Or a common one might be vim.opt.showbreak = '>>> '
+
+vim.cmd "checkhealth obsidian"
+
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -956,6 +971,31 @@ require('lazy').setup({
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
 
+{
+    "obsidian-nvim/obsidian.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    opts = {
+      completion = {
+        blink = true,
+        nvim_cmp = false,
+      },
+      workspaces = {
+        {
+          name = "filing-cabinet",
+          path = "/Users/jackp/Library/Mobile Documents/iCloud~md~obsidian/Documents/filing-cabinet",
+        },
+      },
+    },
+  },
+
+  -- **Choose your renderer**
+  { "MeanderingProgrammer/render-markdown.nvim", dependencies = { "echasnovski/mini.icons" }, opts = {} },
+  -- { "OXY2DEV/markview.nvim", lazy = false },
+
+
+
+
+  
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
@@ -976,7 +1016,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  { import = 'custom.plugins' },
+  -- { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
